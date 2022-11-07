@@ -6,22 +6,22 @@ from flask import Blueprint, jsonify, request, make_response, abort
 
 books_bp = Blueprint("books", __name__, url_prefix="/books")
 
-def validate_model(model_id):
+def validate_model(cls, model_id):
     try:
         model_id = int(model_id)
     except:
-        abort(make_response({"message":f"ID {model_id} invalid"}, 400))
+        abort(make_response({"message":f"{cls.__name__} {model_id} invalid"}, 400))
 
-    model = model.query.get(model_id)
+    model = cls.query.get(model_id)
 
     if not model:
-        abort(make_response({"message":f"ID {model_id} not found"}, 404))
+        abort(make_response({"message":f"{cls.__name__} {model_id} not found"}, 404))
 
     return model
 
 @books_bp.route("/<book_id>", methods=["GET"])
 def handle_book(book_id):
-    book = validate_model(book_id)
+    book = validate_model(Book, book_id)
 
     return {
         "id": book.id,
@@ -31,7 +31,7 @@ def handle_book(book_id):
 
 @books_bp.route("/<book_id>", methods=["PUT"])
 def update_book(book_id):
-    book = validate_model(book_id)
+    book = validate_model(Book, book_id)
 
     request_body = request.get_json()
 
@@ -44,7 +44,7 @@ def update_book(book_id):
 
 @books_bp.route("/<book_id>", methods=["DELETE"])
 def delete_book(book_id):
-    book = validate_model(book_id)
+    book = validate_model(Book, book_id)
 
     db.session.delete(book)
     db.session.commit()
