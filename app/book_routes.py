@@ -26,7 +26,8 @@ def handle_book(book_id):
     return {
         "id": book.id,
         "title": book.title,
-        "description": book.description
+        "description": book.description,
+        "author": book.author
         }
 
 @books_bp.route("/<book_id>", methods=["PUT"])
@@ -37,6 +38,7 @@ def update_book(book_id):
 
     book.title = request_body["title"]
     book.description = request_body["description"]
+    book.author_id = request_body["author_id"]
 
     db.session.commit()
 
@@ -60,7 +62,8 @@ def handle_books():
             books_response.append({
                 "id": book.id,
                 "title": book.title,
-                "description": book.description
+                "description": book.description,
+                "author id": book.author_id
             })
         return jsonify(books_response)
     elif request.method == "POST":
